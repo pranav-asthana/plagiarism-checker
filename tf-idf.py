@@ -1,30 +1,52 @@
 import os
 import math
+import operator
 from nltk.tokenize import word_tokenize
 from progressbar import ProgressBar
 from pprint import pprint
 
-def tf_idf_dict(document, corpus):
+def get_idf_vector(corpus, vocabulary):
     N = len(corpus)
-    dictionary = {}
-    for term in document:
-        term_frequency = math.log(document.count(term), 10)
+    idf_vector = []
+    for term in vocabulary:
         document_frequency = 0
         for doc in corpus:
             if term in doc:
                 document_frequency += 1
         inverse_document_frequency = math.log(N / document_frequency, 10)
-        tf_idf = term_frequency * inverse_document_frequency
-        dictionary[term] = tf_idf
-    return dictionary
+        idf_vector.append(inverse_document_frequency)
+    return idf_vector
+
+def get_tf_idf_vector(document, idf_vector, vocabulary):
+    vect = []
+    tf_vector = []
+    for term in vocabulary:
+        try:
+            term_frequency = 1 + math.log(document.count(term), 10)
+        except:
+            term_frequency = 0
+        tf_vector.append(term_frequency)
+    vect = list(map(operator.mul, tf_vector, idf_vector))
+    return vect
 
 corpus = []
+vocabulary = []
 pbar = ProgressBar()
+print('Reading data ...')
 for document in pbar(os.listdir('data')):
     # print('reading ', document)
     text = open(os.path.join('data', document), encoding = 'ISO-8859-1').read()
     text = word_tokenize(text)
+    vocabulary.extend(text)
     corpus.append(text)
+vocabulary = list(set(vocabulary))
 
-for document in corpus:
-    pprint(list(tf_idf_dict(document, corpus).values()))
+idf_vector = get_idf_vector(corpus, vocabulary)
+
+tf_idf_matrix = []
+
+print('Building tf-idf matrix ...')
+pbar = ProgressBar()
+for document in pbar(corpus):
+    tf_idf_vector = get_tf_idf_vector(document, idf_vector, vocabulary)
+    tf_idf_matrix.append(tf_idf_vector)
