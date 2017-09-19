@@ -6,6 +6,7 @@ import nltk
 from nltk.tokenize import wordpunct_tokenize
 from progressbar import ProgressBar
 from pprint import pprint
+import matplotlib.pyplot as plt
 
 def get_idf_vector(corpus, vocabulary):
     N = len(corpus)
@@ -31,11 +32,16 @@ def get_tf_idf_vector(document, idf_vector, vocabulary):
     vect = list(map(operator.mul, tf_vector, idf_vector))
     return vect
 
+def cosine_similarity(vector1, vector2):
+    def norm(vector):
+        return math.sqrt(sum(i**2 for i in vector))
+    return sum(map(operator.mul, vector1, vector2)) / (norm(vector1) * norm(vector2))
+
 corpus = []
 vocabulary = []
 pbar = ProgressBar()
 print('Preparing data ...')
-for document in (os.listdir('data')):
+for document in pbar(os.listdir('data')):
     # print('reading ', document)
     text = open(os.path.join('data', document), encoding = 'ISO-8859-1').read()
     text = wordpunct_tokenize(text)
@@ -56,3 +62,13 @@ pbar = ProgressBar()
 for document in pbar(corpus):
     tf_idf_vector = get_tf_idf_vector(document, idf_vector, vocabulary)
     tf_idf_matrix.append(tf_idf_vector)
+
+sim_matrix = []
+for document1 in tf_idf_matrix:
+    sim_matrix.append([])
+    for document2 in tf_idf_matrix:
+        sim = cosine_similarity(document1, document2)
+        sim_matrix[-1].append(sim)
+
+plt.imshow(sim_matrix)
+plt.show()
