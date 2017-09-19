@@ -1,7 +1,8 @@
 import os
 import math
 import operator
-from nltk.tokenize import word_tokenize
+import string
+from nltk.tokenize import wordpunct_tokenize
 from progressbar import ProgressBar
 from pprint import pprint
 
@@ -36,7 +37,9 @@ print('Reading data ...')
 for document in pbar(os.listdir('data')):
     # print('reading ', document)
     text = open(os.path.join('data', document), encoding = 'ISO-8859-1').read()
-    text = word_tokenize(text)
+    text = wordpunct_tokenize(text)
+    text = [word for word in text if word not in string.punctuation]
+    text = [word.lower() for word in text]
     vocabulary.extend(text)
     corpus.append(text)
 vocabulary = list(set(vocabulary))
