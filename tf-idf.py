@@ -2,6 +2,7 @@ import os
 import math
 import operator
 import string
+import nltk
 from nltk.tokenize import wordpunct_tokenize
 from progressbar import ProgressBar
 from pprint import pprint
@@ -33,13 +34,15 @@ def get_tf_idf_vector(document, idf_vector, vocabulary):
 corpus = []
 vocabulary = []
 pbar = ProgressBar()
-print('Reading data ...')
-for document in pbar(os.listdir('data')):
+print('Preparing data ...')
+for document in (os.listdir('data')):
     # print('reading ', document)
     text = open(os.path.join('data', document), encoding = 'ISO-8859-1').read()
     text = wordpunct_tokenize(text)
-    text = [word for word in text if word not in string.punctuation]
-    text = [word.lower() for word in text]
+    text = [word for word in text if word not in string.punctuation] # remove punctuation
+    text = [word.lower() for word in text] # case folding
+    text = [word for word in text if word not in nltk.corpus.stopwords.words('english')] # remove stopwords
+    text = [nltk.stem.PorterStemmer().stem(word) for word in text] # stemming
     vocabulary.extend(text)
     corpus.append(text)
 vocabulary = list(set(vocabulary))
