@@ -24,10 +24,7 @@ def get_tf_idf_vector(document, idf_vector, vocabulary):
     vect = []
     tf_vector = []
     for term in vocabulary:
-        try:
-            term_frequency = 1 + math.log(document.count(term), 10)
-        except:
-            term_frequency = 0
+        term_frequency = (1 + math.log(document.count(term), 10) if document.count(term) else 0)
         tf_vector.append(term_frequency)
     vect = list(map(operator.mul, tf_vector, idf_vector))
     return vect
@@ -63,12 +60,19 @@ for document in pbar(corpus):
     tf_idf_vector = get_tf_idf_vector(document, idf_vector, vocabulary)
     tf_idf_matrix.append(tf_idf_vector)
 
+print('Building similarity matrix ...')
 sim_matrix = []
-for document1 in tf_idf_matrix:
+pbar = ProgressBar()
+for document1 in pbar(tf_idf_matrix):
     sim_matrix.append([])
     for document2 in tf_idf_matrix:
         sim = cosine_similarity(document1, document2)
         sim_matrix[-1].append(sim)
 
-plt.imshow(sim_matrix)
+for i in range(len(sim_matrix)):
+    for j in range(len(sim_matrix[0])):
+        if sim_matrix[i][j] > 0.9 and i < j:
+            print(i, j)
+
+plt.imshow(sim_matrix, cmap = 'gray')
 plt.show()
