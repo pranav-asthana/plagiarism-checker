@@ -1,6 +1,6 @@
 # Plagiarism Checker
 
-This is a simple plagiarism checker which uses the vector space model of Information Retrieval.
+This is a simple plagiarism checker which uses the vector space model of Information Retrieval with tf-idf vectors to represent documents.
 
 ## Vector space model
 In the vector space model, every document is seen as a set of words and each word in the **vocabulary** is seen as a dimension. We then assign some **weight** to every word present in the document and take that as our vector.

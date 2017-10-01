@@ -14,7 +14,17 @@ import matplotlib.pyplot as plt
 
 corpus, vocabulary, idf_vector = [None, None, None]
 
+
 def get_idf_vector(corpus, vocabulary):
+    """
+    Compute idf vector for a given corpus.
+
+    Input:
+        corpus
+        vocabulary
+    Return:
+        idf_vector
+    """
     N = len(corpus)
     idf_vector = []
     for term in vocabulary:
@@ -26,7 +36,18 @@ def get_idf_vector(corpus, vocabulary):
         idf_vector.append(inverse_document_frequency)
     return idf_vector
 
+
 def get_tf_idf_vector(document, idf_vector, vocabulary):
+    """
+    Compute tf-idf vector for a document.
+
+    Input:
+        document : Normalized text of document
+        idf_vector : idf vector for a given corpus
+        vocabulary : Vocabulary for a given corpus
+    Return:
+        vect : tf-idf vector
+    """
     vect = []
     tf_vector = []
     for term in vocabulary:
@@ -35,13 +56,31 @@ def get_tf_idf_vector(document, idf_vector, vocabulary):
     vect = list(map(operator.mul, tf_vector, idf_vector))
     return vect
 
+
 def cosine_similarity(vector1, vector2):
+    """
+    Compute the cosine similarity between two vectors.
+
+    Input:
+        vector1, vector2 : Two vectors
+    Return:
+        Cosine of the angle between the two vectors
+    """
     def norm(vector):
         return math.sqrt(sum(i**2 for i in vector))
     return sum(map(operator.mul, vector1, vector2)) / (norm(vector1) * norm(vector2))
 
+
 def segment_document(document_path):
-    text = open(document_path, encoding = 'ISO-8859-1').read()
+    """
+    Segment a given document, by sentences, into smaller documents.
+
+    Input:
+        document_path : Path to document for segmentation
+    Return:
+        segments : List of segemnts of document
+    """
+    text = open(document_path, encoding='ISO-8859-1').read()
     text = ' '.join(text.split('\n'))
     sentence_list = sent_tokenize(text)
     j = 0
@@ -55,26 +94,47 @@ def segment_document(document_path):
         i += 1
     return segments
 
+
 def get_tokens(text):
+    """
+    Tokenize and perform normalization on raw text. This involves tokenization,
+    punctuation removal, case folding, stopword removal and stemming.
+
+    Input:
+        text : String containing raw text
+    Return:
+        text : List of normalized tokens
+    """
     text = wordpunct_tokenize(text)
-    text = [word for word in text if word not in string.punctuation] # remove punctuation
-    text = [word.lower() for word in text] # case folding
-    text = [word for word in text if word not in nltk.corpus.stopwords.words('english')] # remove stopwords
-    text = [nltk.stem.PorterStemmer().stem(word) for word in text] # stemming
+    text = [word for word in text if word not in string.punctuation]  # remove punctuation
+    text = [word.lower() for word in text]  # case folding
+    text = [word for word in text if word not in nltk.corpus.stopwords.words('english')]  # remove stopwords
+    text = [nltk.stem.PorterStemmer().stem(word) for word in text]  # stemming
     return text
 
+
 def prepare_data(data_dir):
+    """
+    Build corpus and vocabulary structures from directory of corpus.
+
+    Input:
+        data_dir : Path to directory to be used as corpus
+    Return:
+        corpus : Corpus documents as lists
+        vocabulary : List of unique words in corpus
+    """
     corpus = []
     vocabulary = []
     pbar = ProgressBar()
     for document in pbar(os.listdir(data_dir)):
         # print('reading ', document)
-        text = open(os.path.join(data_dir, document), encoding = 'ISO-8859-1').read()
+        text = open(os.path.join(data_dir, document), encoding='ISO-8859-1').read()
         text = get_tokens(text)
         vocabulary.extend(text)
         corpus.append([document, text])
     vocabulary = list(set(vocabulary))
     return corpus, vocabulary
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -99,7 +159,7 @@ def main():
                 os.mkdir(new_dir)
             segments = segment_document(os.path.join(data_dir, document))
             for segment in segments:
-                open(os.path.join(new_dir, segment[0]), 'w', encoding = 'ISO-8859-1').write(segment[1])
+                open(os.path.join(new_dir, segment[0]), 'w', encoding='ISO-8859-1').write(segment[1])
 
         corpus, vocabulary = prepare_data(new_dir)
 
@@ -121,13 +181,13 @@ def main():
     except:
         print('Processed corpus not found')
 
-    if corpus == None:
+    if corpus is None:
         print('Please pre-process the data first')
         return
 
     print('Reading input file ...')
     scores = [['', 0]] * len(corpus)
-    target_text = open(target_file, encoding = 'ISO-8859-1').read()
+    target_text = open(target_file, encoding='ISO-8859-1').read()
     segments = segment_document(target_file)
     pbar = ProgressBar()
     for segment in pbar(segments):
@@ -146,30 +206,11 @@ def main():
     scores1 = [score for score in scores if score[1] > 0.8]
     scores = {a: [q[1] for q in b] for a, b in itertools.groupby(sorted(scores), operator.itemgetter(0))}
     scores = list({a: sum(b) for a, b in scores.items()}.items())
-    scores = sorted(scores, key = operator.itemgetter(1))
-    scores = [(score[0], score[1]/max(scores, key = operator.itemgetter(1))[1]) for score in scores][-11:-1]
+    scores = sorted(scores, key=operator.itemgetter(1))
+    scores = [(score[0], score[1]/max(scores, key=operator.itemgetter(1))[1]) for score in scores][-11:-1]
     results = open('results', 'wb')
     pickle.dump(scores, results)
     pprint(scores)
-
-    # print('Building similarity matrix ...')
-    # sim_matrix = []
-    # pbar = ProgressBar()
-    # for document1 in pbar(tf_idf_matrix):
-    #     sim_matrix.append([])
-    #     for document2 in tf_idf_matrix:
-    #         sim = cosine_similarity(document1[1], document2[1])
-    #         sim_matrix[-1].append(sim)
-    #
-    # # for i in range(len(sim_matrix)):
-    # #     for j in range(len(sim_matrix[0])):
-    # #         if sim_matrix[i][j] > 0.9 and i < j:
-    # #             print(corpus[i][0], corpus[j][0])
-    # output = [(corpus[i][0], corpus[j][0]) for i in range(len(sim_matrix[0])) for j in range(len(sim_matrix)) if sim_matrix[i][j] > 0.9 and i < j]
-    # pprint([names for names in output if 'orig' in names[0] or 'orig' in names[1]])
-
-    # plt.imshow(sim_matrix, cmap = 'gray')
-    # plt.show()
 
 if __name__ == '__main__':
     main()
