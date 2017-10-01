@@ -66,3 +66,31 @@ The GUI home frame consists of options for:
 3. Path to corpus
 
 On selecting the options and running the script, the user is taken to another frame where the results are displayed. The results are in the form of a bar graph of the **top 10 most similar documents in the corpus** and their scores along with the **extent of plagiarism**.
+
+## Results
+We tested on 2 data sets:
+
+1. **Plagiarised Short Answers**: Consists of 95 answers of 200-300 words each along with 5 original answers that were copied.
+> Courtesy: Paul Clough (Information Studies) and Mark Stevenson (Computer Science), University of Sheffield.  
+
+
+2. **Scientific papers database**: Consists of 4003 research papers in computer science (converted from .tex to plain text using *detex*).
+> Courtesy: KDD Cup 2013
+
+I also tested my design document using the dynamic search feature and got a plagiarism score of XX%!
+
+## Dependencies
+1. Python >= 3.5
+2. pip
+
+To install other dependencies, simply run
+```
+pip install -r requirements.txt
+```
+
+## Build instructions
+Run
+```
+python main.py
+```
+This will open the GUI, where all options are available.
