@@ -1,6 +1,6 @@
 import argparse
-from nltk import wordpunct_tokenize
-from tf_idf import *
+import nltk
+from progressbar import ProgressBar
 
 def get_keywords(text):
     text = text.split()

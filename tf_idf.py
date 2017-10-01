@@ -6,10 +6,13 @@ import nltk
 import re
 import argparse
 import itertools
+import pickle
 from nltk.tokenize import wordpunct_tokenize, sent_tokenize
 from progressbar import ProgressBar
 from pprint import pprint
 import matplotlib.pyplot as plt
+
+corpus, vocabulary, idf_vector = [None, None, None]
 
 def get_idf_vector(corpus, vocabulary):
     N = len(corpus)
@@ -39,6 +42,7 @@ def cosine_similarity(vector1, vector2):
 
 def segment_document(document_path):
     text = open(document_path, encoding = 'ISO-8859-1').read()
+    text = ' '.join(text.split('\n'))
     sentence_list = sent_tokenize(text)
     j = 0
     i = 0
@@ -79,22 +83,37 @@ def main():
                         help='Path to corpus')
     parser.add_argument('text_path', type=str,
                         help='Path to text file for checking')
+    parser.add_argument('-p', '--preprocess', dest='preprocess', action='store_true',
+                        help='Preprocess the corpus')
     args = parser.parse_args()
     data_dir = args.corpus_path
     target_file = args.text_path
 
-    print('Preparing data ...')
-    new_dir = 'split_data'
-    for document in os.listdir(data_dir):
-        if new_dir not in os.listdir():
-            os.mkdir(new_dir)
-        segments = segment_document(os.path.join(data_dir, document))
-        for segment in segments:
-            open(os.path.join(new_dir, segment[0]), 'w', encoding = 'ISO-8859-1').write(segment[1])
+    if args.preprocess:
+        print('Preparing data ...')
+        new_dir = 'split_data'
+        for document in os.listdir(data_dir):
+            if new_dir not in os.listdir():
+                os.mkdir(new_dir)
+            segments = segment_document(os.path.join(data_dir, document))
+            for segment in segments:
+                open(os.path.join(new_dir, segment[0]), 'w', encoding = 'ISO-8859-1').write(segment[1])
 
-    corpus, vocabulary = prepare_data(new_dir)
+        corpus, vocabulary = prepare_data(new_dir)
 
-    idf_vector = get_idf_vector([document[1] for document in corpus], vocabulary)
+        idf_vector = get_idf_vector([document[1] for document in corpus], vocabulary)
+        preprocessed = open('preprocessed', 'wb')
+        pickle.dump([corpus, vocabulary, idf_vector], preprocessed)
+
+    try:
+        preprocessed = open('preprocessed', 'rb')
+        corpus, vocabulary, idf_vector = pickle.load(preprocessed)
+    except:
+        print('Processed corpus not found')
+
+    if corpus == None:
+        print('Please pre-process the data first')
+        return
 
     tf_idf_matrix = []
 
@@ -118,15 +137,17 @@ def main():
             sim = cosine_similarity(target_tf_idf, doc[1])
             # print('Accessing scores() ', index, ' with values ', doc[0], sim)
             scores[index] = [doc[0], scores[index][1] + sim]
-            # if sim > 0.5:
-            #     print(sim, doc[0])
             index += 1
+
     max_score = max([score[1] for score in scores])
-    scores = [[score[0][:10], score[1]/max_score] for score in scores]
-    scores = [score for score in scores if score[1] > 0.8]
+    scores = [(score[0][:10], score[1]/max_score) for score in scores]
+    scores1 = [score for score in scores if score[1] > 0.8]
     scores = {a: [q[1] for q in b] for a, b in itertools.groupby(sorted(scores), operator.itemgetter(0))}
-    scores = list({a: sum(b) / len(b) for a, b in scores.items()}.items())
-    scores = sorted(scores, key = operator.itemgetter(1), reverse = True)
+    scores = list({a: sum(b) for a, b in scores.items()}.items())
+    scores = sorted(scores, key = operator.itemgetter(1))
+    scores = [(score[0], score[1]/max(scores, key = operator.itemgetter(1))[1]) for score in scores][-11:-1]
+    results = open('results', 'wb')
+    pickle.dump(scores, results)
     pprint(scores)
 
     # print('Building similarity matrix ...')

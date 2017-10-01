@@ -20,6 +20,8 @@ class Ui_Dialog(QtGui.QWidget):
     def __init__(self):
         super(Ui_Dialog,self).__init__()
         self.setupUi(self)
+        self.target_path = None
+        self.corpus_path = None
 
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
@@ -35,16 +37,26 @@ class Ui_Dialog(QtGui.QWidget):
         self.verticalLayout_2.addWidget(self.label)
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+
+        self.chkBoxItem = QtGui.QCheckBox()
+        self.chkBoxItem.setCheckState(QtCore.Qt.Unchecked)
+        self.chkBoxItem.setText('Preprocess corpus')
+        self.verticalLayout.addWidget(self.chkBoxItem)
+
         self.pushButton = QtGui.QPushButton(Dialog)
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
         self.verticalLayout.addWidget(self.pushButton)
+
         self.pushButton_2 = QtGui.QPushButton(Dialog)
         self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
         self.verticalLayout.addWidget(self.pushButton_2)
         self.pushButton_3 = QtGui.QPushButton(Dialog)
+
+
         self.pushButton_3.setObjectName(_fromUtf8("pushButton_3"))
         self.verticalLayout.addWidget(self.pushButton_3)
         self.verticalLayout_2.addLayout(self.verticalLayout)
+
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -59,26 +71,40 @@ class Ui_Dialog(QtGui.QWidget):
         self.pushButton_2.clicked.connect(self.corpBrowse)
         self.pushButton_3.clicked.connect(self.runCode)
         self.setWindowIcon(QtGui.QIcon('plagiarism-image.png'))
-        
+
     def docBrowse(self):
-        filepath = QtGui.QFileDialog.getOpenFileName(self,
+        self.target_path = QtGui.QFileDialog.getOpenFileName(self,
                                                           'Single File',
                                                           "C:/",'*.txt')
-        print(filepath)
+        self.pushButton.setText("Document: " + self.target_path)
+        print(self.target_path)
     #select corpus folder
     def corpBrowse(self):
-        filepaths = QtGui.QFileDialog.getExistingDirectory(None,
+        self.corpus_path = QtGui.QFileDialog.getExistingDirectory(None,
                                                            'Select a folder:',
                                                            'C:/',
                                                            QtGui.QFileDialog.ShowDirsOnly)
-        print(filepaths)
+        self.pushButton_2.setText("Corpus: " + self.corpus_path)
+        print(self.corpus_path)
 
     def runCode(self):
-        os.system('frame2f.py')
+        if self.target_path == None or len(self.target_path) < 1:
+            print('Please select a target document for checking!')
+            return
+
+        if self.corpus_path == None or len(self.corpus_path) < 1:
+            print('Please select a corpus!')
+            return
+
+        preprocess = ''
+        if self.chkBoxItem.isChecked():
+            preprocess = '-p '
+
+        os.system('python tf_idf.py ' + preprocess  + self.corpus_path + ' ' + self.target_path)
+        os.system('python frame2f.py')
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     ex = Ui_Dialog()
     ex.show()
     sys.exit(app.exec_())
-
