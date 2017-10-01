@@ -1,4 +1,4 @@
-# Plagiarism Checker
+# Design Document
 
 This is a simple plagiarism checker which uses the vector space model of Information Retrieval with tf-idf vectors to represent documents.
 

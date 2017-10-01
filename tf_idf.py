@@ -1,3 +1,5 @@
+""" Perform all IR operations involing tf-idf calculations and building vector space."""
+
 import os
 import math
 import operator
@@ -19,7 +21,7 @@ def get_idf_vector(corpus, vocabulary):
     """
     Compute idf vector for a given corpus.
 
-    Input:
+    Keyword arguments:
         corpus
         vocabulary
     Return:
@@ -41,7 +43,7 @@ def get_tf_idf_vector(document, idf_vector, vocabulary):
     """
     Compute tf-idf vector for a document.
 
-    Input:
+    Keyword arguments:
         document : Normalized text of document
         idf_vector : idf vector for a given corpus
         vocabulary : Vocabulary for a given corpus
@@ -61,7 +63,7 @@ def cosine_similarity(vector1, vector2):
     """
     Compute the cosine similarity between two vectors.
 
-    Input:
+    Keyword arguments:
         vector1, vector2 : Two vectors
     Return:
         Cosine of the angle between the two vectors
@@ -75,7 +77,7 @@ def segment_document(document_path):
     """
     Segment a given document, by sentences, into smaller documents.
 
-    Input:
+    Keyword arguments:
         document_path : Path to document for segmentation
     Return:
         segments : List of segemnts of document
@@ -100,7 +102,7 @@ def get_tokens(text):
     Tokenize and perform normalization on raw text. This involves tokenization,
     punctuation removal, case folding, stopword removal and stemming.
 
-    Input:
+    Keyword arguments:
         text : String containing raw text
     Return:
         text : List of normalized tokens
@@ -117,7 +119,7 @@ def prepare_data(data_dir):
     """
     Build corpus and vocabulary structures from directory of corpus.
 
-    Input:
+    Keyword arguments:
         data_dir : Path to directory to be used as corpus
     Return:
         corpus : Corpus documents as lists

@@ -1,3 +1,5 @@
+""" Fetch data by performing a Google search for dynamic corpus """
+
 import argparse
 import nltk
 from progressbar import ProgressBar
@@ -7,7 +9,7 @@ def get_keywords(text):
     """
     Extract keywords from a given text using tf and word length.
 
-    Input:
+    Keyword arguments:
         text : Raw text
     Return:
         keywords : List of keywords
@@ -37,7 +39,7 @@ def scrape_data(url):
     """
     Scrape all text data from a given url.
 
-    Input:
+    Keyword arguments:
         url : URL of page to be scraped
     Return:
         text : Raw text of the webpage
@@ -57,7 +59,7 @@ def retrive_from_google(query, num_pages=5):
     """
     Search Google for a keyword and retrieve urls of search results.
 
-    Input:
+    Keyword arguments:
         query : Query to search on Google
         num_pages : Number of urls to return
     Return:
