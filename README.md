@@ -77,7 +77,9 @@ We tested on 2 data sets:
 2. **Scientific papers database**: Consists of 4003 research papers in computer science (converted from .tex to plain text using *detex*).
 > Courtesy: KDD Cup 2013
 
-I also tested my design document using the dynamic search feature and got a plagiarism score of XX%!
+I also tested my design document using the dynamic search feature and got a plagiarism score of 58%!
+
+However, due to limitations put by google, since I only allowed to make a small numer of requests, I am unable to fetch all the documents I want.
 
 ## Dependencies
 1. Python >= 3.5
@@ -94,3 +96,7 @@ Run
 python main.py
 ```
 This will open the GUI, where all options are available.
+
+## Contributors
+1. Pranav Kumar Asthana
+2. Ajinkya Rasane
