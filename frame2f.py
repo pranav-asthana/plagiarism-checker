@@ -18,13 +18,17 @@ except AttributeError:
 
 class Ui_Dialog(QtGui.QWidget):
     
-    ## constructor for the widget ##
+    """
+    constructor for the widget
+    """
     def __init__(self):
         super(Ui_Dialog,self).__init__()
         self.setupUi(self)
     
     def setupUi(self, Dialog):
-        ## setting up layout ##
+        """
+        setting up layout 
+        """
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.resize(495, 466)
         self.gridLayout = QtGui.QGridLayout(Dialog)
@@ -33,7 +37,9 @@ class Ui_Dialog(QtGui.QWidget):
         # self.listWidget.setObjectName(_fromUtf8("listWidget"))
         # self.gridLayout.addWidget(self.listWidget, 1, 0, 1, 1)
         
-        ## creating label ##
+        """
+        creating label (Documents and their similarity with original document)
+        """
         self.label = QtGui.QLabel(Dialog)
         font = QtGui.QFont()
         font.setPointSize(10)
@@ -41,7 +47,9 @@ class Ui_Dialog(QtGui.QWidget):
         self.label.setObjectName(_fromUtf8("label"))
         self.gridLayout.addWidget(self.label)
         
-        ## creating label ##
+        """
+        creating label 
+        """
         self.label2 = QtGui.QLabel(Dialog)
         font = QtGui.QFont()
         font.setPointSize(10)
@@ -49,7 +57,9 @@ class Ui_Dialog(QtGui.QWidget):
         self.label2.setObjectName(_fromUtf8("label2"))
         self.gridLayout.addWidget(self.label2)
         
-        ## creating label ##
+        """
+        creating label (Extent of plagiarism)
+        """
         self.label3 = QtGui.QLabel(Dialog)
         font = QtGui.QFont()
         font.setPointSize(10)
@@ -58,13 +68,17 @@ class Ui_Dialog(QtGui.QWidget):
         self.label3.setText("Extent of plagiarism:")
         self.gridLayout.addWidget(self.label3)
         
-        ## creating a progress bar ##
+        """
+        creating a progress bar
+        """
         self.progressBar = QtGui.QProgressBar(Dialog)
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.gridLayout.addWidget(self.progressBar)
         
-        ## creating a back button ##
+        """
+        creating a back button
+        """
         self.backButton = QtGui.QPushButton(Dialog)
         self.backButton.setObjectName(_fromUtf8("backButton"))
         self.backButton.setText('Back')
@@ -77,7 +91,9 @@ class Ui_Dialog(QtGui.QWidget):
         read_results(self)
 
     def retranslateUi(self, Dialog):
-        ## initialising ui elements ##
+        """
+        initializing ui elements 
+        """
         Dialog.setWindowTitle("Results")
         Dialog.setWindowIcon(QtGui.QIcon('plagiarism-image.png'))
         self.label.setText(_translate("Dialog", "Documents and their similarity with original document", None))
@@ -108,7 +124,9 @@ def read_results(ui):
 
     ui.progressBar.setProperty("value", max([score[1] for score in scores]) * 100)
 
-## main method to run the app ##
+"""
+main method to run the app
+"""
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     ex = Ui_Dialog()
