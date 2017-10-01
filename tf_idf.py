@@ -92,6 +92,7 @@ def main():
     if args.preprocess:
         print('Preparing data ...')
         new_dir = 'split_data'
+        os.system('rm -rf ' + new_dir)
         pbar = ProgressBar()
         for document in pbar(os.listdir(data_dir)):
             if new_dir not in os.listdir():
@@ -103,26 +104,26 @@ def main():
         corpus, vocabulary = prepare_data(new_dir)
 
         idf_vector = get_idf_vector([document[1] for document in corpus], vocabulary)
+
+        print('Building tf-idf matrix ...')
+        tf_idf_matrix = []
+        pbar = ProgressBar()
+        for document in pbar(corpus):
+            tf_idf_vector = get_tf_idf_vector(document[1], idf_vector, vocabulary)
+            tf_idf_matrix.append([document[0], tf_idf_vector])
+
         preprocessed = open('preprocessed', 'wb')
-        pickle.dump([corpus, vocabulary, idf_vector], preprocessed)
+        pickle.dump([corpus, vocabulary, idf_vector, tf_idf_matrix], preprocessed)
 
     try:
         preprocessed = open('preprocessed', 'rb')
-        corpus, vocabulary, idf_vector = pickle.load(preprocessed)
+        corpus, vocabulary, idf_vector, tf_idf_matrix = pickle.load(preprocessed)
     except:
         print('Processed corpus not found')
 
     if corpus == None:
         print('Please pre-process the data first')
         return
-
-    tf_idf_matrix = []
-
-    print('Building tf-idf matrix ...')
-    pbar = ProgressBar()
-    for document in pbar(corpus):
-        tf_idf_vector = get_tf_idf_vector(document[1], idf_vector, vocabulary)
-        tf_idf_matrix.append([document[0], tf_idf_vector])
 
     print('Reading input file ...')
     scores = [['', 0]] * len(corpus)

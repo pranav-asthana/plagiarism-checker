@@ -50,7 +50,7 @@ class Ui_Dialog(QtGui.QWidget):
         font.setPointSize(10)
         self.label3.setFont(font)
         self.label3.setObjectName(_fromUtf8("label3"))
-        self.label3.setText("Percentage plagiarised:")
+        self.label3.setText("Extent of plagiarism:")
         self.gridLayout.addWidget(self.label3)
 
         self.progressBar = QtGui.QProgressBar(Dialog)

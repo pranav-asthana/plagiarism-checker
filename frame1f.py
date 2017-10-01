@@ -88,7 +88,7 @@ class Ui_Dialog(QtGui.QWidget):
     def docBrowse(self):
         self.target_path = QtGui.QFileDialog.getOpenFileName(self,
                                                           'Single File',
-                                                          "C:/",'*.txt')
+                                                          "C:/",'*')
         self.pushButton.setText("Document: " + self.target_path)
         print(self.target_path)
     #select corpus folder
