@@ -11,7 +11,7 @@ def get_keywords(text):
     keywords = []
     for pair in biwords:
         tf = biwords.count(pair)
-        if searches < 5:
+        if searches < 3:
             print(tf, pair)
             keywords.append(pair)
             searches += 1

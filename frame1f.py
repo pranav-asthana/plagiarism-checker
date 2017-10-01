@@ -28,6 +28,7 @@ class Ui_Dialog(QtGui.QWidget):
         Dialog.resize(407, 431)
         self.verticalLayout_2 = QtGui.QVBoxLayout(Dialog)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
+
         self.label = QtGui.QLabel(Dialog)
         font = QtGui.QFont()
         font.setPointSize(10)
@@ -35,6 +36,15 @@ class Ui_Dialog(QtGui.QWidget):
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName(_fromUtf8("label"))
         self.verticalLayout_2.addWidget(self.label)
+
+        self.static = QtGui.QRadioButton('static corpus', self)
+        self.dynamic = QtGui.QRadioButton('Dynamic corpus (google search, will be slower)', self)
+        self.searchType = QtGui.QButtonGroup()
+        self.searchType.addButton(self.static)
+        self.searchType.addButton(self.dynamic)
+        self.verticalLayout_2.addWidget(self.static)
+        self.verticalLayout_2.addWidget(self.dynamic)
+
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
 
@@ -70,6 +80,9 @@ class Ui_Dialog(QtGui.QWidget):
         self.pushButton.clicked.connect(self.docBrowse)
         self.pushButton_2.clicked.connect(self.corpBrowse)
         self.pushButton_3.clicked.connect(self.runCode)
+        self.dynamic.clicked.connect(self.dynamicClicked)
+        self.static.clicked.connect(self.staticClicked)
+
         self.setWindowIcon(QtGui.QIcon('plagiarism-image.png'))
 
     def docBrowse(self):
@@ -92,16 +105,31 @@ class Ui_Dialog(QtGui.QWidget):
             print('Please select a target document for checking!')
             return
 
-        if self.corpus_path == None or len(self.corpus_path) < 1:
-            print('Please select a corpus!')
-            return
+        if self.static.isChecked():
+            if self.corpus_path == None or len(self.corpus_path) < 1:
+                print('Please select a corpus!')
+                return
 
-        preprocess = ''
-        if self.chkBoxItem.isChecked():
-            preprocess = '-p '
+            preprocess = ''
+            if self.chkBoxItem.isChecked():
+                preprocess = '-p '
 
-        os.system('python tf_idf.py ' + preprocess  + self.corpus_path + ' ' + self.target_path)
-        os.system('python frame2f.py')
+            print('running' + 'python tf_idf.py ' + preprocess  + self.corpus_path + ' ' + self.target_path)
+            os.system('python tf_idf.py ' + preprocess  + self.corpus_path + ' ' + self.target_path)
+            os.system('python frame2f.py')
+
+        if self.dynamic.isChecked():
+            os.system('python fetch.py ' + self.target_path)
+            os.system('python tf_idf.py -p google_retrieved/' + ' ' + self.target_path)
+            os.system('python frame2f.py')
+
+    def dynamicClicked(self):
+        self.pushButton_2.hide()
+        self.chkBoxItem.hide()
+
+    def staticClicked(self):
+        self.pushButton_2.show()
+        self.chkBoxItem.show()
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)

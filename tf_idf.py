@@ -92,7 +92,8 @@ def main():
     if args.preprocess:
         print('Preparing data ...')
         new_dir = 'split_data'
-        for document in os.listdir(data_dir):
+        pbar = ProgressBar()
+        for document in pbar(os.listdir(data_dir)):
             if new_dir not in os.listdir():
                 os.mkdir(new_dir)
             segments = segment_document(os.path.join(data_dir, document))
@@ -140,7 +141,7 @@ def main():
             index += 1
 
     max_score = max([score[1] for score in scores])
-    scores = [(score[0][:10], score[1]/max_score) for score in scores]
+    scores = [(''.join(score[0].split('_')[:-1]), score[1]/max_score) for score in scores]
     scores1 = [score for score in scores if score[1] > 0.8]
     scores = {a: [q[1] for q in b] for a, b in itertools.groupby(sorted(scores), operator.itemgetter(0))}
     scores = list({a: sum(b) for a, b in scores.items()}.items())

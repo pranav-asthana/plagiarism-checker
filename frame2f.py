@@ -39,21 +39,30 @@ class Ui_Dialog(QtGui.QWidget):
         self.gridLayout.addWidget(self.label)
 
         self.label2 = QtGui.QLabel(Dialog)
-        # font = QtGui.QFont()
-        # font.setPointSize(10)
-        # self.label2.setFont(font)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label2.setFont(font)
         self.label2.setObjectName(_fromUtf8("label2"))
         self.gridLayout.addWidget(self.label2)
 
+        self.label3 = QtGui.QLabel(Dialog)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label3.setFont(font)
+        self.label3.setObjectName(_fromUtf8("label3"))
+        self.label3.setText("Percentage plagiarised:")
+        self.gridLayout.addWidget(self.label3)
+
         self.progressBar = QtGui.QProgressBar(Dialog)
-        self.progressBar.setProperty("value", 24)
+        self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.gridLayout.addWidget(self.progressBar)
 
-        # self.verticalScrollBar = QtGui.QScrollBar(Dialog)
-        # self.verticalScrollBar.setOrientation(QtCore.Qt.Vertical)
-        # self.verticalScrollBar.setObjectName(_fromUtf8("verticalScrollBar"))
-        # self.gridLayout.addWidget(self.verticalScrollBar, 1, 1, 1, 1)
+        self.backButton = QtGui.QPushButton(Dialog)
+        self.backButton.setObjectName(_fromUtf8("backButton"))
+        self.backButton.setText('Back')
+        self.backButton.clicked.connect(self.dispose)
+        self.gridLayout.addWidget(self.backButton)
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -64,6 +73,9 @@ class Ui_Dialog(QtGui.QWidget):
         Dialog.setWindowTitle("Results")
         Dialog.setWindowIcon(QtGui.QIcon('plagiarism-image.png'))
         self.label.setText(_translate("Dialog", "Documents and their similarity with original document", None))
+
+    def dispose(self):
+        exit(0)
 
 def read_results(ui):
     scores = pickle.load(open('results', 'rb'))
@@ -84,10 +96,9 @@ def read_results(ui):
     plt.savefig('plot.jpg')
 
 
-    for score in scores:
-        # ui.listWidget.addItem(str(score[0]) + ' : ' + str(score[1]))
-        ui.label2.setPixmap(QtGui.QPixmap('plot.jpg'))
-    pass
+    ui.label2.setPixmap(QtGui.QPixmap('plot.jpg'))
+
+    ui.progressBar.setProperty("value", max([score[1] for score in scores]) * 100)
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
