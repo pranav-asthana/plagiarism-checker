@@ -12,7 +12,8 @@ pip install -r requirements.txt
 ```
 
 ## Build instructions
-Run
+Clone this repository or download and extract into a directory.
+Then run
 ```
 python main.py
 ```
