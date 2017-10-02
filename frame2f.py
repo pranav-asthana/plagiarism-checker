@@ -10,56 +10,49 @@ except AttributeError:
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
+
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
+
 class Ui_Dialog(QtGui.QWidget):
-    
-    """
-    constructor for the widget
-    """
+
     def __init__(self):
-        super(Ui_Dialog,self).__init__()
+        """
+        Constructor for the widget
+        """
+        super(Ui_Dialog, self).__init__()
         self.setupUi(self)
-    
+
     def setupUi(self, Dialog):
         """
-        setting up layout 
+        Set up layout
         """
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.resize(495, 466)
         self.gridLayout = QtGui.QGridLayout(Dialog)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        # self.listWidget = QtGui.QListWidget(Dialog)
-        # self.listWidget.setObjectName(_fromUtf8("listWidget"))
-        # self.gridLayout.addWidget(self.listWidget, 1, 0, 1, 1)
-        
-        """
-        creating label (Documents and their similarity with original document)
-        """
+
+        # creating label (Documents and their similarity with original document)
         self.label = QtGui.QLabel(Dialog)
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label.setFont(font)
         self.label.setObjectName(_fromUtf8("label"))
         self.gridLayout.addWidget(self.label)
-        
-        """
-        creating label 
-        """
+
+        # creating label
         self.label2 = QtGui.QLabel(Dialog)
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label2.setFont(font)
         self.label2.setObjectName(_fromUtf8("label2"))
         self.gridLayout.addWidget(self.label2)
-        
-        """
-        creating label (Extent of plagiarism)
-        """
+
+        # creating label (Extent of plagiarism)
         self.label3 = QtGui.QLabel(Dialog)
         font = QtGui.QFont()
         font.setPointSize(10)
@@ -67,18 +60,14 @@ class Ui_Dialog(QtGui.QWidget):
         self.label3.setObjectName(_fromUtf8("label3"))
         self.label3.setText("Extent of plagiarism:")
         self.gridLayout.addWidget(self.label3)
-        
-        """
-        creating a progress bar
-        """
+
+        # creating a progress bar
         self.progressBar = QtGui.QProgressBar(Dialog)
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.gridLayout.addWidget(self.progressBar)
-        
-        """
-        creating a back button
-        """
+
+        # creating a back button
         self.backButton = QtGui.QPushButton(Dialog)
         self.backButton.setObjectName(_fromUtf8("backButton"))
         self.backButton.setText('Back')
@@ -92,7 +81,7 @@ class Ui_Dialog(QtGui.QWidget):
 
     def retranslateUi(self, Dialog):
         """
-        initializing ui elements 
+        Initialize ui elements
         """
         Dialog.setWindowTitle("Results")
         Dialog.setWindowIcon(QtGui.QIcon('plagiarism-image.png'))
@@ -101,7 +90,11 @@ class Ui_Dialog(QtGui.QWidget):
     def dispose(self):
         exit(0)
 
+
 def read_results(ui):
+    """
+    Read generated results and display bar graph
+    """
     scores = pickle.load(open('results', 'rb'))
 
     import matplotlib.pyplot as plt
@@ -111,7 +104,7 @@ def read_results(ui):
     y_pos = np.arange(10)
 
     fig, ax = plt.subplots()
-    plt.subplots_adjust(left = 0.25, bottom = 0.25)
+    plt.subplots_adjust(left=0.25, bottom=0.25)
     plt.xlim(0, 1)
     plt.yticks(y_pos, [score[0] for score in scores])
     bars = plt.barh(x_pos, [0]*n)
@@ -119,16 +112,20 @@ def read_results(ui):
         bars[i].set_width(scores[i][1])
     plt.savefig('plot.jpg')
 
-
     ui.label2.setPixmap(QtGui.QPixmap('plot.jpg'))
 
     ui.progressBar.setProperty("value", max([score[1] for score in scores]) * 100)
 
-"""
-main method to run the app
-"""
-if __name__ == '__main__':
+
+def main():
+    """
+    Main method to run the app
+    """
     app = QtGui.QApplication(sys.argv)
     ex = Ui_Dialog()
     ex.show()
     sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()

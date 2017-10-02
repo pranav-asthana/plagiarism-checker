@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['prepare_5fdata',['prepare_data',['../namespacetf__idf.html#aacdbd45e03f5d4dbbf941310e73acb46',1,'tf_idf']]]
+  ['docbrowse',['docBrowse',['../classmain_1_1Ui__Dialog.html#a1609e6b695c07bf5e2f23ab979ae3eef',1,'main::Ui_Dialog']]],
+  ['dynamicclicked',['dynamicClicked',['../classmain_1_1Ui__Dialog.html#a43d2bee7664466f890e6e47fd6514e10',1,'main::Ui_Dialog']]]
 ];
